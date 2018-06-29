@@ -212,7 +212,7 @@ function value(bsonIter::BSONIter)
         data = Array{Ptr{UInt8}}(1)
         ccall(
             (:bson_iter_document, libbson),
-            Ptr{Void}, (Ptr{UInt8}, Ptr{UInt32}, Ptr{Ptr{UInt8}}),
+            Ptr{Nothing}, (Ptr{UInt8}, Ptr{UInt32}, Ptr{Ptr{UInt8}}),
             bsonIter._wrap_, length, data
             )
         return BSONObject(data[1], length[1], bsonIter)
@@ -221,7 +221,7 @@ function value(bsonIter::BSONIter)
         data = Array{Ptr{UInt8}}(1)
         ccall(
             (:bson_iter_array, libbson),
-            Ptr{Void}, (Ptr{UInt8}, Ptr{UInt32}, Ptr{Ptr{UInt8}}),
+            Ptr{Nothing}, (Ptr{UInt8}, Ptr{UInt32}, Ptr{Ptr{UInt8}}),
             bsonIter._wrap_, length, data
             )
         return BSONArray(data[1], length[1], bsonIter)
@@ -230,7 +230,7 @@ function value(bsonIter::BSONIter)
         dataPtr = Array{Ptr{UInt8}}(1)
         ccall(
             (:bson_iter_binary, libbson),
-            Ptr{Void}, (Ptr{UInt8}, Ptr{Void}, Ptr{UInt32}, Ptr{Ptr{UInt8}}),
+            Ptr{Nothing}, (Ptr{UInt8}, Ptr{Nothing}, Ptr{UInt32}, Ptr{Ptr{UInt8}}),
             bsonIter._wrap_, C_NULL, lengthPtr, dataPtr
             )
         length = Int(lengthPtr[1])

@@ -1,11 +1,13 @@
+using Dates
+
 struct BSONObject
-    _wrap_::Ptr{Void}
+    _wrap_::Ptr{Nothing}
     _owner_::Any
 
     BSONObject() = begin
         _wrap_ = ccall(
             (:bson_new, libbson),
-            Ptr{Void}, ()
+            Ptr{Nothing}, ()
             )
         bsonObject = new(_wrap_, Union{})
         finalizer(bsonObject, destroy)
@@ -16,11 +18,11 @@ struct BSONObject
         _owner_ = Array{UInt8}(128)
         ccall(
                 (:bson_copy_to, libbson),
-                Void, (Ptr{Void}, Ptr{UInt8}),
+                Nothing, (Ptr{Nothing}, Ptr{UInt8}),
                 other._wrap_,
                 pointer(_owner_)
         )
-        bsonObject = new(Ptr{Void}(pointer(_owner_)), _owner_)
+        bsonObject = new(Ptr{Nothing}(pointer(_owner_)), _owner_)
         finalizer(bsonObject, destroy)
         return bsonObject
     end
@@ -38,7 +40,7 @@ struct BSONObject
         bsonError = BSONError()
         _wrap_ = ccall(
             (:bson_new_from_json, libbson),
-            Ptr{Void}, (Ptr{UInt8}, Csize_t, Ptr{UInt8}),
+            Ptr{Nothing}, (Ptr{UInt8}, Csize_t, Ptr{UInt8}),
             jsonCStr,
             length(jsonCStr),
             bsonError._wrap_
@@ -53,28 +55,28 @@ struct BSONObject
         buffer = Array{UInt8}(128)
         ccall(
             (:bson_init_static, libbson),
-            Bool, (Ptr{Void}, Ptr{UInt8}, UInt32),
+            Bool, (Ptr{Nothing}, Ptr{UInt8}, UInt32),
             buffer, data, length
             ) || error("bson_init_static: failure")
-        b = Compat.unsafe_convert(Ptr{Void}, buffer)
+        b = Compat.unsafe_convert(Ptr{Nothing}, buffer)
         new(b, (_ref_, buffer))
     end
 
-    BSONObject(_wrap_::Ptr{Void}, _owner_::Any) = new(_wrap_, _owner_)
+    BSONObject(_wrap_::Ptr{Nothing}, _owner_::Any) = new(_wrap_, _owner_)
 end
 export BSONObject
 
 function convert(::Type{AbstractString}, bsonObject::BSONObject)
     cstr = ccall(
         (:bson_as_json, libbson),
-        Ptr{UInt8}, (Ptr{Void}, Ptr{UInt8}),
+        Ptr{UInt8}, (Ptr{Nothing}, Ptr{UInt8}),
         bsonObject._wrap_,
         C_NULL
         )
     result = String(unsafe_string(cstr))
     ccall(
         (:bson_free, libbson),
-        Void, (Ptr{Void},),
+        Nothing, (Ptr{Nothing},),
         cstr
         )
     return result
@@ -89,7 +91,7 @@ export show
 length(bsonObject::BSONObject) =
     ccall(
         (:bson_count_keys, libbson),
-        UInt32, (Ptr{Void},),
+        UInt32, (Ptr{Nothing},),
         bsonObject._wrap_
         )
 export length
@@ -98,7 +100,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::Bool)
     keyCStr = string(key)
     ccall(
         (:bson_append_bool, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Bool),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Bool),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -109,7 +111,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::Real)
     keyCStr = string(key)
     ccall(
         (:bson_append_double, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Cdouble),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Cdouble),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -122,7 +124,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::DateTime)
     ts = round(Int64, datetime2unix(val)*1000)
     ccall(
         (:bson_append_date_time, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Clonglong),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Clonglong),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -136,7 +138,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::BSONObject)
     keyCStr = string(key)
     ccall(
         (:bson_append_document, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Ptr{UInt8}),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Ptr{UInt8}),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -147,7 +149,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::Union{Int8, UI
     keyCStr = string(key)
     ccall(
         (:bson_append_int32, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Cint),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Cint),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -158,7 +160,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::Union{Int64, U
     keyCStr = string(key)
     ccall(
         (:bson_append_int64, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Clong),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Clong),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -169,7 +171,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::BSONOID)
     keyCStr = string(key)
     ccall(
         (:bson_append_oid, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Ptr{UInt8}),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Ptr{UInt8}),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -182,7 +184,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::AbstractString
     valUTF8 = String(val)
     ccall(
         (:bson_append_utf8, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Ptr{UInt8}, Cint),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Ptr{UInt8}, Cint),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -190,7 +192,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::AbstractString
         sizeof(valUTF8)
         ) || error("libBSON: overflow")
 end
-function append(bsonObject::BSONObject, key::AbstractString, val::Void)
+function append(bsonObject::BSONObject, key::AbstractString, val::Nothing)
     append_null(bsonObject, key)
 end
 function append(bsonObject::BSONObject, key::AbstractString, val::Symbol)
@@ -209,19 +211,19 @@ function append(bsonObject::BSONObject, key::AbstractString, val::Associative)
     childBuffer = Array{UInt8}(128)
     ccall(
         (:bson_append_document_begin, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Ptr{Void}),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Ptr{Nothing}),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
         childBuffer
         ) || error("bson_append_document_begin: failure")
-    childBSON = BSONObject(Compat.unsafe_convert(Ptr{Void}, childBuffer), childBuffer)
+    childBSON = BSONObject(Compat.unsafe_convert(Ptr{Nothing}, childBuffer), childBuffer)
     for (k, v) in val
         append(childBSON, k, v)
     end
     ccall(
         (:bson_append_document_end, libbson),
-        Bool, (Ptr{Void}, Ptr{Void}),
+        Bool, (Ptr{Nothing}, Ptr{Nothing}),
         bsonObject._wrap_,
         childBuffer
         ) || error("bson_append_document_end: failure")
@@ -230,7 +232,7 @@ function append(bsonObject::BSONObject, key::AbstractString, valBinary::Vector{U
     keyCStr = string(key)
     ccall(
         (:bson_append_binary, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Cint, Ptr{UInt8}, Cint),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Cint, Ptr{UInt8}, Cint),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
@@ -245,19 +247,19 @@ function append(bsonObject::BSONObject, key::AbstractString, val::Vector)
     childBuffer = Array{UInt8}(128)
     ccall(
         (:bson_append_array_begin, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint, Ptr{Void}),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Ptr{Nothing}),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr),
         childBuffer
         ) || error("bson_append_array_begin: failure")
-    childBSONArray = BSONArray(Compat.unsafe_convert(Ptr{Void}, childBuffer), childBuffer)
+    childBSONArray = BSONArray(Compat.unsafe_convert(Ptr{Nothing}, childBuffer), childBuffer)
     for element in val
         append(childBSONArray, element)
     end
     ccall(
         (:bson_append_array_end, libbson),
-        Bool, (Ptr{Void}, Ptr{Void}),
+        Bool, (Ptr{Nothing}, Ptr{Nothing}),
         bsonObject._wrap_,
         childBuffer
         ) || error("bson_append_array_end: failure")
@@ -268,7 +270,7 @@ function append_null(bsonObject::BSONObject, key::AbstractString)
     keyCStr = string(key)
     ccall(
         (:bson_append_null, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr)
@@ -280,7 +282,7 @@ function append_minkey(bsonObject::BSONObject, key::AbstractString)
     keyCStr = string(key)
     ccall(
         (:bson_append_minkey, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr)
@@ -292,7 +294,7 @@ function append_maxkey(bsonObject::BSONObject, key::AbstractString)
     keyCStr = string(key)
     ccall(
         (:bson_append_maxkey, libbson),
-        Bool, (Ptr{Void}, Ptr{UInt8}, Cint),
+        Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint),
         bsonObject._wrap_,
         keyCStr,
         length(keyCStr)
@@ -307,7 +309,7 @@ export append_maxkey
 function destroy(bsonObject::BSONObject)
     ccall(
         (:bson_destroy, libbson),
-        Void, (Ptr{Void},),
+        Nothing, (Ptr{Nothing},),
         bsonObject._wrap_
         )
 end

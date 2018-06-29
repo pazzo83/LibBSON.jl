@@ -1,12 +1,12 @@
 struct BSONOID
-    _wrap_::Ptr{Void}
+    _wrap_::Ptr{Nothing}
     _ref_::Any
 
     BSONOID() = begin
         buffer = Array{UInt8}(12)
         ccall(
             (:bson_oid_init, libbson),
-            Void, (Ptr{UInt8}, Ptr{Void}),
+            Nothing, (Ptr{UInt8}, Ptr{Nothing}),
             buffer,
             C_NULL
             )
@@ -28,7 +28,7 @@ struct BSONOID
         buffer = Array{UInt8}(12)
         ccall(
             (:bson_oid_init_from_string, libbson),
-            Void, (Ptr{UInt8}, Ptr{UInt8}),
+            Nothing, (Ptr{UInt8}, Ptr{UInt8}),
             buffer,
             cstr
             )
@@ -43,7 +43,7 @@ export BSONOID
 import Base.==
 ==(lhs::BSONOID, rhs::BSONOID) = ccall(
     (:bson_oid_equal, libbson),
-    Bool, (Ptr{Void}, Ptr{Void}),
+    Bool, (Ptr{Nothing}, Ptr{Nothing}),
     lhs._wrap_, rhs._wrap_
     )
 export ==
@@ -62,7 +62,7 @@ function convert(::Type{AbstractString}, oid::BSONOID)
     cstr = Array{UInt8}(25)
     ccall(
         (:bson_oid_to_string, libbson),
-        Void, (Ptr{UInt8}, Ptr{UInt8}),
+        Nothing, (Ptr{UInt8}, Ptr{UInt8}),
         oid._wrap_,
         cstr
         )
