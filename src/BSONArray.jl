@@ -59,9 +59,9 @@ function convert(::Type{AbstractString}, bsonArray::BSONArray)
 end
 export convert
 
-convert(#unused#::Type{Array}, b::BSONArray) where T = collect(b)
-convert(#unused#::Type{Array{T}}, b::BSONArray) where T= collect(T, b)
-convert(#unused#::Type{Array{T,1}}, b::BSONArray) where T = collect(T, b)
+convert(::Type{Array}, b::BSONArray) where T = collect(b)
+convert(::Type{Array{T}}, b::BSONArray) where T= collect(T, b)
+convert(::Type{Array{T,1}}, b::BSONArray) where T = collect(T, b)
 
 string(bsonArray::BSONArray) = convert(AbstractString, bsonArray)
 
