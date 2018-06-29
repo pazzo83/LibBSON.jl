@@ -58,7 +58,7 @@ hash(oid::BSONOID, h::UInt) = hash(
     )
 export hash
 
-function convert(#unused#::Type{AbstractString}, oid::BSONOID)
+function convert(::Type{AbstractString}, oid::BSONOID)
     cstr = Vector{UInt8}(undef, 25)
     ccall(
         (:bson_oid_to_string, libbson),
