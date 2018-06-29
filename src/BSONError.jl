@@ -1,7 +1,7 @@
 using Compat
 import Compat.String
 
-type BSONError
+struct BSONError
     _wrap_::Vector{UInt8}
 
     function BSONError()

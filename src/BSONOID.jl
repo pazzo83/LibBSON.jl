@@ -1,4 +1,4 @@
-immutable BSONOID
+struct BSONOID
     _wrap_::Ptr{Void}
     _ref_::Any
 

@@ -1,4 +1,4 @@
-type BSONArray
+struct BSONArray
     _wrap_::Ptr{Void}
     _ref_::Any
 
@@ -275,21 +275,6 @@ function append_maxkey(bsonArray::BSONArray)
         ) || error("libBSON: overflow")
 end
 export append_maxkey
-
-vector(bsonArray::BSONArray) = begin
-    a = Any[]
-    for v in bsonArray
-        if isa(v, BSONObject)
-            push!(a, dict(v))
-        elseif isa(v, BSONArray)
-            push!(a, vector(v))
-        else
-            push!(a, v)
-        end
-    end
-    return a
-end
-export vector
 
 # Private
 

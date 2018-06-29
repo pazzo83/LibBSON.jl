@@ -1,4 +1,4 @@
-type BSONObject
+struct BSONObject
     _wrap_::Ptr{Void}
     _owner_::Any
 
@@ -300,20 +300,7 @@ function append_maxkey(bsonObject::BSONObject, key::AbstractString)
 end
 export append_maxkey
 
-dict(bsonObject::BSONObject) = begin
-    d = Dict{Any, Any}()
-    for (k, v) in bsonObject
-        if isa(v, BSONObject)
-            d[k] = dict(v)
-        elseif isa(v, BSONArray)
-            d[k] = vector(v)
-        else
-            d[k] = v
-        end
-    end
-    return d
-end
-export dict
+
 
 # Private
 

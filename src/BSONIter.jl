@@ -1,4 +1,4 @@
-type BSONIter
+mutable struct BSONIter
     _wrap_::Vector{UInt8}
     done::Bool
 

@@ -25,7 +25,9 @@ include("BSONOID.jl")
 include("BSONError.jl")
 include("BSONObject.jl")
 include("BSONArray.jl")
+include("utils.jl")
 include("BSONType.jl")
 include("BSONIter.jl")
+
 
 end
