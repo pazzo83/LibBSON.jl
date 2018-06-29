@@ -137,7 +137,7 @@ function key(bsonIter::BSONIter)
         bsonIter._wrap_
         )
     cstr == C_NULL && error("bson_iter_key: failure")
-    String(unsafe_string(cstr))
+    string(unsafe_string(cstr))
 end
 
 function value_type(bsonIter::BSONIter)
@@ -192,7 +192,7 @@ function value(bsonIter::BSONIter)
     elseif ty == BSON_TYPE_MAXKEY
         return :maxkey
     elseif ty == BSON_TYPE_UTF8
-        return String(unsafe_string(ccall(
+        return string(unsafe_string(ccall(
             (:bson_iter_utf8, libbson),
             Ptr{UInt8}, (Ptr{UInt8}, Ptr{UInt8}),
             bsonIter._wrap_,

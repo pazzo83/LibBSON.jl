@@ -19,15 +19,15 @@ const errorDescs = Dict{Int,Dict{Int, String}}(
     )), 
     2 => Dict{Int64,String}(1 => "BADFD"))
 
-convert(::Type{String}, bsonError::BSONError) = begin
+convert(#unused#::Type{String}, bsonError::BSONError) = begin
     uint32s = reinterpret(UInt32, bsonError._wrap_)
     domain = uint32s[1]
     code = uint32s[2]
-    return Compat.String(bsonError._wrap_[9:end])
+    return string(bsonError._wrap_[9:end])
 end
 export convert
 
-string(bsonError::BSONError) = String(bsonError._wrap_)
+string(bsonError::BSONError) = string(bsonError._wrap_)
 export string
 
 error(bsonError::BSONError) = error(string(bsonError))

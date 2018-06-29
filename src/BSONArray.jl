@@ -1,4 +1,5 @@
-struct BSONArray
+using Dates
+mutable struct BSONArray
     _wrap_::Ptr{Nothing}
     _ref_::Any
 
@@ -8,7 +9,7 @@ struct BSONArray
             Ptr{Nothing}, ()
             )
         bsonArray = new(_wrap_, Union{})
-        finalizer(bsonArray, destroy)
+        finalizer(destroy, bsonArray)
         return bsonArray
     end
 
@@ -27,7 +28,7 @@ struct BSONArray
             Bool, (Ptr{Nothing}, Ptr{UInt8}, UInt32),
             buffer, data, length
             ) || error("bson_init_static: failure")
-        b = Compat.unsafe_convert(Ptr{Nothing}, buffer)
+        b = unsafe_convert(Ptr{Nothing}, buffer)
         new(b, (_ref_, buffer))
     end
 
@@ -58,9 +59,9 @@ function convert(::Type{AbstractString}, bsonArray::BSONArray)
 end
 export convert
 
-convert(::Type{Array}, b::BSONArray) = collect(b)
-convert{T}(::Type{Array{T}}, b::BSONArray) = collect(T, b)
-convert{T}(::Type{Array{T,1}}, b::BSONArray) = collect(T, b)
+convert(#unused#::Type{Array}, b::BSONArray) where T = collect(b)
+convert(#unused#::Type{Array{T}}, b::BSONArray) where T= collect(T, b)
+convert(#unused#::Type{Array{T,1}}, b::BSONArray) where T = collect(T, b)
 
 string(bsonArray::BSONArray) = convert(AbstractString, bsonArray)
 
@@ -123,7 +124,7 @@ function append(bsonArray::BSONArray, val::BSONArray)
         length(keyCStr),
         childBuffer
         ) || error("bson_append_array_begin: failure")
-    childBSONArray = BSONArray(Compat.unsafe_convert(Ptr{Nothing}, childBuffer), childBuffer)
+    childBSONArray = BSONArray(unsafe_convert(Ptr{Nothing}, childBuffer), childBuffer)
     for element in val
         append(childBSONArray, element)
     end
@@ -205,7 +206,7 @@ function append(bsonArray::BSONArray, val::Associative)
         length(keyCStr),
         childBuffer
         ) || error("bson_append_document_begin: failure")
-    childBSONObject = BSONObject(Compat.unsafe_convert(Ptr{Nothing}, childBuffer), childBuffer)
+    childBSONObject = BSONObject(unsafe_convert(Ptr{Nothing}, childBuffer), childBuffer)
     for (k, v) in val
         append(childBSONObject, k, v)
     end
@@ -227,7 +228,7 @@ function append(bsonArray::BSONArray, val::Vector)
         length(keyCStr),
         childBuffer
         ) || error("bson_append_array_begin: failure")
-    childBSONArray = BSONArray(Compat.unsafe_convert(Ptr{Nothing}, childBuffer), childBuffer)
+    childBSONArray = BSONArray(unsafe_convert(Ptr{Nothing}, childBuffer), childBuffer)
     for element in val
         append(childBSONArray, element)
     end

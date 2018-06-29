@@ -19,7 +19,8 @@ import Base.hash,
     Base.next,
     Base.done,
     Base.string,
-    Base.length
+    Base.length,
+    Base.unsafe_convert
 
 include("BSONOID.jl")
 include("BSONError.jl")
