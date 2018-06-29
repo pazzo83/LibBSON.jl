@@ -235,7 +235,7 @@ function value(bsonIter::BSONIter)
             )
         length = Int(lengthPtr[1])
         dataArray = Array{UInt8}(undef, length)
-        unsafe_copy!(pointer(dataArray), dataPtr[1], length)
+        unsafe_copyto!(pointer(dataArray), dataPtr[1], length)
         return dataArray
     else
         error("unhandled BSONType $ty")
