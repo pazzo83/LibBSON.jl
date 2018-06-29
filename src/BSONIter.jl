@@ -3,7 +3,7 @@ mutable struct BSONIter
     done::Bool
 
     function BSONIter(bsonObject::BSONObject)
-        bsonIter = new(Array{UInt8}(128), false)
+        bsonIter = new(Array{UInt8}(undef, 128), false)
         ccall(
             (:bson_iter_init, libbson),
             Bool, (Ptr{UInt8}, Ptr{UInt8}),
@@ -19,7 +19,7 @@ mutable struct BSONIter
     end
 
     function BSONIter(bsonObject::BSONObject, key::AbstractString)
-        bsonIter = new(Array{UInt8}(128), false)
+        bsonIter = new(Array{UInt8}(undef, 128), false)
         ccall(
             (:bson_iter_init, libbson),
             Bool, (Ptr{UInt8}, Ptr{UInt8}),
@@ -37,7 +37,7 @@ mutable struct BSONIter
     end
 
     function BSONIter(bsonArray::BSONArray)
-        bsonIter = new(Array{UInt8}(128), false)
+        bsonIter = new(Array{UInt8}(undef, 128), false)
         ccall(
             (:bson_iter_init, libbson),
             Bool, (Ptr{UInt8}, Ptr{UInt8}),
@@ -53,7 +53,7 @@ mutable struct BSONIter
     end
 
     function BSONIter(bsonArray::BSONArray, key::Integer)
-        bsonIter = new(Array{UInt8}(128), false)
+        bsonIter = new(Array{UInt8}(undef, 128), false)
         ccall(
             (:bson_iter_init, libbson),
             Bool, (Ptr{UInt8}, Ptr{UInt8}),
@@ -184,7 +184,7 @@ function value(bsonIter::BSONIter)
             Int64, (Ptr{UInt8}, ),
             bsonIter._wrap_
             )
-        return Dates.unix2datetime(ts / 1000)
+        return unix2datetime(ts / 1000)
     elseif ty == BSON_TYPE_NULL
         return nothing
     elseif ty == BSON_TYPE_MINKEY

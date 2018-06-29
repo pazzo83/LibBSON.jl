@@ -116,7 +116,7 @@ function append(bsonObject::BSONObject, key::AbstractString, val::Real)
         val
         ) || error("libBSON: overflow")
 end
-using Base.Dates: datetime2unix
+
 function append(bsonObject::BSONObject, key::AbstractString, val::DateTime)
     keyCStr = string(key)
     ts = round(Int64, datetime2unix(val)*1000)
