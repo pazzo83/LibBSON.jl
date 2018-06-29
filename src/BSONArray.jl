@@ -194,7 +194,7 @@ function append(bsonArray::BSONArray, val::Symbol)
 end
 function append(bsonArray::BSONArray, val::AbstractDict)
     keyCStr = string(length(bsonArray))
-    childBuffer = Array{UInt8}(128)
+    childBuffer = Array{UInt8}(undef, 128)
     ccall(
         (:bson_append_document_begin, libbson),
         Bool, (Ptr{Nothing}, Ptr{UInt8}, Cint, Ptr{Nothing}),
