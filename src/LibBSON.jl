@@ -1,6 +1,6 @@
 module LibBSON
 
-using Compat
+using Dates
 
 include( "../deps/deps.jl")
 

@@ -1,5 +1,3 @@
-using Dates
-
 mutable struct BSONObject
     _wrap_::Ptr{Nothing}
     _owner_::Any

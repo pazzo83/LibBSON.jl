@@ -1,4 +1,3 @@
-using Dates
 mutable struct BSONArray
     _wrap_::Ptr{Nothing}
     _ref_::Any
@@ -37,9 +36,7 @@ end
 export BSONArray
 
 
-if Base.VERSION > v"0.5.0-"
-Base.iteratoreltype(::Type{BSONArray}) = Base.EltypeUnknown()
-end
+Base.IteratorEltype(::Type{BSONArray}) = Base.EltypeUnknown()
 
 function convert(::Type{AbstractString}, bsonArray::BSONArray)
     cstr = ccall(
@@ -195,7 +192,7 @@ function append(bsonArray::BSONArray, val::Symbol)
         append(bsonArray, string(val))
     end
 end
-function append(bsonArray::BSONArray, val::Associative)
+function append(bsonArray::BSONArray, val::AbstractDict)
     keyCStr = string(length(bsonArray))
     childBuffer = Array{UInt8}(128)
     ccall(

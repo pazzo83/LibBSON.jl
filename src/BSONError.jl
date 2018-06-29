@@ -1,6 +1,3 @@
-using Compat
-import Compat.String
-
 struct BSONError
     _wrap_::Vector{UInt8}
 
